@@ -1,0 +1,53 @@
+name: Cache Workflow
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build-with-cache:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Cache dependencies
+        id: cache-step
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache
+            node_modules
+          key: cache-dd9c577
+          restore-keys: |
+            cache-dd9c577
+      
+      - name: prime-cache-dd9c577
+        run: |
+          echo "Cache hit result: ${{ steps.cache-step.outputs.cache-hit }}"
+          if [ "${{ steps.cache-step.outputs.cache-hit }}" == "true" ]; then
+            echo " Cache was found and restored!"
+          else
+            echo " Cache miss - creating new cache"
+          fi
+      
+      - name: Install dependencies (if cache miss)
+        if: steps.cache-step.outputs.cache-hit != 'true'
+        run: |
+          echo "Installing dependencies..."
+          mkdir -p ~/.cache
+          echo "dependency-data" > ~/.cache/test-file.txt
+          echo "Dependencies installed and cached!"
+      
+      - name: Verify cache contents
+        run: |
+          echo "Checking cached files..."
+          if [ -f ~/.cache/test-file.txt ]; then
+            echo " Cache file found!"
+            cat ~/.cache/test-file.txt
+          else
+            echo " Cache file not found"
+          fi
