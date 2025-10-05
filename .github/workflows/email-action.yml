@@ -1,0 +1,25 @@
+name: Email Action Workflow
+
+# Trigger the workflow manually or on push
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  email-job:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: 22f2000167@ds.study.iitm.ac.in
+        run: |
+          echo "Hello from my GitHub Action!"
+          echo "This step contains my email address"
+          date
+      
+      - name: Additional step
+        run: echo "Workflow completed successfully!"
